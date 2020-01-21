@@ -1,20 +1,9 @@
 version: "3.5"
 services:
-  #MySQL Service
-  db:
-    image: mysql:5.7
-    environment:
-        MYSQL_ROOT_PASSWORD: NOT_SECURE_CHANGE
-        MYSQL_DATABASE: muradb
-    volumes:
-        - mura_nuxtjs_decoupled_db_data:/var/lib/mysql
-    ports:
-        - "55556:3306"
-
   #Mura Service
   mura:
     depends_on:
-      - db
+      - mysql
     build:
       context: .
     environment:
@@ -25,18 +14,25 @@ services:
       MURA_DATASOURCE: muradb
       MURA_DATABASE: muradb
       MURA_DBTYPE: mysql
+      MURA_DBCONNECTIONSTRING: "jdbc:mysql://mysql:3306/muradb?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true"
+      MURA_DBCLASS: com.mysql.cj.jdbc.Driver
       MURA_DBUSERNAME: root
-      MURA_DBPASSWORD: NOT_SECURE_CHANGE
-      MURA_DBHOST: db
-      MURA_DBPORT: 3306
+      MURA_DBPASSWORD: password
       MURA_SITEIDINURLS: "false"
       MURA_RELATEDCONTENTSETID: "*"
       MURA_INDEXFILEINURLS: "false"
+      MURA_ADMINEMAIL: ${MURA_ADMINEMAIL:-info@example.com}
+      MURA_PORT: ${WEB_PORT:-8888}
+      MURA_TIMEZONE: "PST"
+      MURA_ENABLEDEVELOPMENTSETTINGS: "true"
+      MURA_MAILSERVERIP: "mailcatcher"
+      MURA_MAILSERVERSMTPPORT: ${SMTP_PORT:-1025}
+      MURA_USEDEFAULTSMTPSERVER: "false"
       MURA_EXTERNALCONFIG: "http://host.docker.internal:3000/mura.config.json"
-      MURA_DEFAULTTHEMEURL: https://github.com/blueriver/MuraMinimal/archive/master.zip
+      MURA_DEFAULTTHEMEURL: "https://github.com/murasoftware/mura-minimal/archive/master.zip"
     volumes:
-        - ../../8/core:/var/www/core
-        - ../../8/admin:/var/www/admin
+        - ../../mura/app/core:/var/www/core
+        - ../../mura/app/admin:/var/www/admin
         - mura_nuxtjs_decoupled_plugins:/var/www/plugins
         - mura_nuxtjs_decoupled_themes:/var/www/themes
         - mura_nuxtjs_decoupled_sites:/var/www/sites
@@ -44,6 +40,23 @@ services:
         - "8888:8888"
     healthcheck:
       disable: true
+
+  #MySQL
+  mysql:
+    image: mysql:latest
+    environment:
+        MYSQL_ROOT_PASSWORD: password
+        MYSQL_DATABASE: muradb
+    volumes:
+        - mura_nuxtjs_decoupled_db_data:/var/lib/mysql
+    ports:
+        - "55555:3306"
+
+  mailcatcher:
+    image: schickling/mailcatcher
+    ports:
+      - "${MAILCATCHER_PORT:-1080}:1080"
+      - "${SMTP_PORT:-1025}:1025"
 
 volumes:
   mura_nuxtjs_decoupled_db_data:

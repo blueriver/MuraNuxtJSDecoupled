@@ -29,7 +29,7 @@
 <h1 class="mt-5">{{content.title}}</h1>
 <b-breadcrumb v-if="crumbs.length > 1" :items="crumbs" />
 <div v-html="content.body"></div>
-<div v-html="region.maincontent"></div>
+<div v-html="region.primarycontent"></div>
 </main>
 <footer class="footer">
  <div class="container">
@@ -109,7 +109,7 @@ var loadContent=async function(context){
 		var crumbs=[]
 	}
 
-	const mainregion=await content.renderDisplayRegion('maincontent')
+	const primarycontent=await content.renderDisplayRegion('primarycontent')
 
 	if(content.get('redirect') && typeof location != 'undefined'){
 		location.href=content.get('redirect')
@@ -119,7 +119,7 @@ var loadContent=async function(context){
 			content:content.getAll(),
 			primaryNavData:primaryNavData,
 			region:{
-				maincontent:mainregion
+				primarycontent:primarycontent
 			},
 			crumbs:crumbs
 		}
@@ -133,7 +133,7 @@ export default {
 		return {
 			content:'',
 			primaryNavData:'',
-			region:{maincontent:''},
+			region:{primarycontent:''},
 			Mura: Mura,
 			crumbs:[]
 		}

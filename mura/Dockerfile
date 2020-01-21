@@ -1,5 +1,5 @@
-FROM blueriver/muracms:8
-MAINTAINER Eddie Ballisty, eddie.ballisty@blueriver.com
+FROM murasoftware/mura:latest
+MAINTAINER Matt Levine, matt.levin@getmura.com
 
 ARG admin_hspw=
 ARG web_hspw=
@@ -17,4 +17,4 @@ COPY web.xml /usr/local/tomcat/conf/
 # COPY . /var/www
 
 # Add healthcheck
-HEALTHCHECK --start-period=3m CMD curl --fail http://localhost:8888/?healthcheck || exit 1
+#HEALTHCHECK --start-period=3m CMD curl --fail http://localhost:8888/?healthcheck || exit 1
